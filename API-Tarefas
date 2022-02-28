@@ -3,11 +3,13 @@ import json
 
 app=Flask(__name__)
 
+#Lista de tarefas informadas
 tarefas_info=[{'id':0,'responsável':'nome1','tarefa':'extrair dados','status':'concluido'},{'id':1,'responsável':'nome2','tarefa':'analisar dados','status':'executando'},       {'id':2,'responsável':'nome3','tarefa':'publicar resultados','status':'pendente'}]
 
 @app.route('/<int:id>',methods=['GET','PUT','DELETE'])
 def tarefa(id):
   if request.method =='GET':
+ #Retorna uma tarefa segundo seu ID
     try:
         resposta=tarefas_info[id]
     except IndexError:
@@ -18,13 +20,16 @@ def tarefa(id):
       resposta={'status':'erro','mensagem':mensagem}
       
   elif request.method =='PUT':
+ #Altera o status de uma tarefa
       dados=json.loads(request.data)
       mensagem1='Atenção, só status da tarefa pode ser alterado'
       mensagem='Status da tarefa alterado'
       tarefas_info[id]['status']=dados
       alteracao=tarefas_info[id]
       resposta={'mensagem1':mensagem1,'mensagem':mensagem,'alteração':alteracao}
+	  
   elif request.method=='DELETE':
+  #Deleta uma status de uma tarefa
     tarefas_info.pop(id)
     mensagem='Registro excluído'
     resposta={'status':'exito','mensagem':mensagem}
@@ -34,12 +39,14 @@ def tarefa(id):
 @app.route('/new',methods=['GET','POST'])
 def new_tarefa():
   if request.method == 'POST':
+#Insere uma nova tarefa e suas informações
     dados=json.loads(request.data)
     posicao=len(tarefas_info)
-    #dados['id']=posicao
     tarefas_info.append(dados)
     return jsonify(tarefas_info[posicao])
+	
   elif request.method == 'GET':
+  #Retorna a lista de tarefas cadastradas
     return jsonify(tarefas_info)
   
 app.run(host='0.0.0.0')
